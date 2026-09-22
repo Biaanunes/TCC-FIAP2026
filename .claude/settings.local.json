@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx oxlint *)",
+      "Bash(npx vite *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)",
+      "Bash(curl -sf http://localhost:5183)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(python3 -c \"import playwright\")",
+      "Bash(lsof -ti:5183 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)",
+      "Bash(find /private/tmp/claude-502 -type f \\\\\\( -iname \"*.png\" -o -iname \"*.jpg\" -o -iname \"*.jpeg\" \\\\\\) -mmin -30 2>/dev/null; echo \"---\"; find ~/Downloads ~/Desktop -maxdepth 1 -type f \\\\\\( -iname \"*.png\" -o -iname \"*.jpg\" -o -iname \"*.jpeg\" \\\\\\) -mmin -30 2>/dev/null)",
+      "Read(//Users/beatriznunes/Downloads/**)"
+    ]
+  }
+}
