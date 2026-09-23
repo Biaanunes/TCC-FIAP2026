@@ -20,7 +20,7 @@ import {
   mockMetas,
 } from './data/mockData';
 import {
-  Sun, Moon, Plus, QrCode, Wallet, Receipt, TrendingUp, Target, Bell, ArrowRight, Menu,
+  Sun, Moon, Plus, QrCode, Wallet, Receipt, TrendingUp, Target, Bell, ArrowRight, Menu, RefreshCcw,
 } from 'lucide-react';
 
 function iniciais(nome) {
@@ -362,7 +362,16 @@ export default function App() {
 
               {/* Tabela de Gastos */}
               <div className={`p-6 rounded-lg border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h3 className="text-base font-bold mb-4">Histórico de Gastos Cadastrados</h3>
+                <div className="flex items-center justify-between mb-4 gap-3">
+                  <h3 className="text-base font-bold">Histórico de Gastos Cadastrados</h3>
+                  <button
+                    type="button"
+                    style={{ borderColor: primaryColor, color: primaryColor }}
+                    className="flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-md border hover:opacity-80 transition flex-shrink-0"
+                  >
+                    <RefreshCcw size={14} /> Cadastrar seu extrato automático
+                  </button>
+                </div>
                 <div className="space-y-3">
                   {listaGastos.map((gasto) => (
                     <div
