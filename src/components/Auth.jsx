@@ -57,7 +57,7 @@ export default function Auth({ onLogin }) {
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-xs py-3 rounded-md transition flex items-center justify-center gap-2">
+            <button type="submit" className="w-full bg-[#7C3AED] hover:bg-[#3B1E77] text-white font-bold text-xs py-3 rounded-md transition flex items-center justify-center gap-2">
               Entrar no Sistema <ArrowRight size={16} />
             </button>
           </form>

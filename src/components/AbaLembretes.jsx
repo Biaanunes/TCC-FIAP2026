@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Check, AlertTriangle, Clock3, CalendarClock, Repeat, X } from 'lucide-react';
+import { Plus, Check, AlertTriangle, Clock3, CalendarClock, Repeat, X, MoreVertical } from 'lucide-react';
 
 function classificar(lembrete, hoje) {
   if (lembrete.pago) return 'pagas';
@@ -15,17 +15,17 @@ function classificar(lembrete, hoje) {
 const SECOES = [
   { chave: 'atrasadas', titulo: 'Atrasadas', tom: 'rose' },
   { chave: 'hoje', titulo: 'Vence hoje', tom: 'amber' },
-  { chave: 'semana', titulo: 'Próximos 7 dias', tom: 'violet' },
+  { chave: 'semana', titulo: 'Próximos 7 dias', tom: 'roxo' },
   { chave: 'futuras', titulo: 'Mais adiante', tom: 'slate' },
   { chave: 'pagas', titulo: 'Já pagas', tom: 'emerald' },
 ];
 
 const TONS = {
-  rose: { badge: 'border-rose-500/40 text-rose-500', dot: 'text-rose-500' },
-  amber: { badge: 'border-amber-500/40 text-amber-500', dot: 'text-amber-500' },
-  violet: { badge: 'border-violet-500/40 text-violet-500', dot: 'text-violet-500' },
-  slate: { badge: 'border-slate-400/40 text-slate-400', dot: 'text-slate-400' },
-  emerald: { badge: 'border-emerald-500/40 text-emerald-500', dot: 'text-emerald-500' },
+  rose: { badge: 'border-rose-500/40 text-rose-500', dot: 'text-rose-500', hex: '#F43F5E' },
+  amber: { badge: 'border-amber-500/40 text-amber-500', dot: 'text-amber-500', hex: '#F59E0B' },
+  roxo: { badge: 'border-violet-500/40 text-violet-500', dot: 'text-violet-500', hex: '#7C3AED' },
+  slate: { badge: 'border-slate-400/40 text-slate-400', dot: 'text-slate-400', hex: '#94A3B8' },
+  emerald: { badge: 'border-emerald-500/40 text-emerald-500', dot: 'text-emerald-500', hex: '#10B981' },
 };
 
 export default function AbaLembretes({ lembretes, onAdicionar, onTogglePago, modoEscuro, primaryColor }) {
@@ -157,32 +157,37 @@ export default function AbaLembretes({ lembretes, onAdicionar, onTogglePago, mod
         </div>
       )}
 
-      {/* Lista agrupada por urgência, tudo num único contêiner — menos caixas, mais fácil de escanear */}
-      <div className={`rounded-lg border overflow-hidden ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-        {SECOES.filter((s) => grupos[s.chave]?.length).map((secao, idx) => {
+      {/* Lista agrupada por urgência — cartões com faixa colorida à esquerda, um por lembrete */}
+      <div className="space-y-6">
+        {SECOES.filter((s) => grupos[s.chave]?.length).map((secao) => {
           const tom = TONS[secao.tom];
           return (
-            <div key={secao.chave} className={idx > 0 ? `border-t ${modoEscuro ? 'border-slate-800' : 'border-slate-100'}` : undefined}>
-              <div className={`flex items-center gap-2 px-5 py-2.5 ${modoEscuro ? 'bg-slate-950/40' : 'bg-slate-50'}`}>
+            <div key={secao.chave} className="space-y-2.5">
+              <div className="flex items-center gap-2 px-1">
                 <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{secao.titulo}</h4>
                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-sm border ${tom.badge}`}>
                   {grupos[secao.chave].length}
                 </span>
               </div>
 
-              <div className={`divide-y ${modoEscuro ? 'divide-slate-800' : 'divide-slate-100'}`}>
+              <div className="space-y-2.5">
                 {grupos[secao.chave].map((lembrete) => (
-                  <div key={lembrete.id} className="flex items-center gap-4 px-5 py-3">
+                  <div
+                    key={lembrete.id}
+                    className={`flex items-center gap-4 pl-4 pr-5 py-3.5 rounded-xl border-l-4 ${modoEscuro ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-slate-200 shadow-sm'}`}
+                    style={{ borderLeftColor: tom.hex, borderLeftWidth: 4 }}
+                  >
                     <button
                       type="button"
                       onClick={() => onTogglePago(lembrete.id)}
-                      className={`w-6 h-6 rounded-full flex items-center justify-center border-2 flex-shrink-0 transition ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition border-2 ${
                         lembrete.pago
                           ? 'border-emerald-500 bg-emerald-500'
                           : modoEscuro ? 'border-slate-700 hover:border-slate-500' : 'border-slate-300 hover:border-slate-400'
                       }`}
+                      style={!lembrete.pago ? { backgroundColor: `${tom.hex}1a` } : undefined}
                     >
-                      {lembrete.pago && <Check size={12} className="text-white" />}
+                      {lembrete.pago ? <Check size={14} className="text-white" /> : <CalendarClock size={15} style={{ color: tom.hex }} />}
                     </button>
 
                     <div className="flex-1 min-w-0">
@@ -202,6 +207,10 @@ export default function AbaLembretes({ lembretes, onAdicionar, onTogglePago, mod
                     </div>
 
                     <span className="font-bold text-sm flex-shrink-0 font-mono">R$ {lembrete.valor.toFixed(2)}</span>
+
+                    <button type="button" className={`flex-shrink-0 p-1 rounded-md transition ${modoEscuro ? 'text-slate-600 hover:text-slate-300 hover:bg-slate-800' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'}`}>
+                      <MoreVertical size={16} />
+                    </button>
                   </div>
                 ))}
               </div>

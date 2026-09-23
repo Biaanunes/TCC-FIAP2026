@@ -10,8 +10,7 @@ import NotificacaoToast from './components/NotificacaoToast';
 import GraficoPizza from './components/GraficoPizza';
 import BolhaIA from './components/BolhaIA';
 import ContadorApp from './components/ContadorApp';
-import IconSquare from './components/IconSquare';
-import Kicker from './components/Kicker';
+import { gradienteFundoClaro, gradienteFundoEscuro } from './theme';
 import {
   mockUsuarioCliente,
   mockCategoriasGastos,
@@ -20,7 +19,8 @@ import {
   mockMetas,
 } from './data/mockData';
 import {
-  Sun, Moon, Plus, QrCode, Wallet, Receipt, TrendingUp, Target, Bell, ArrowRight, Menu, RefreshCcw,
+  Sun, Moon, Plus, QrCode, Wallet, Receipt, TrendingUp, ArrowRight, Menu, RefreshCcw,
+  Pencil, Printer, Settings,
 } from 'lucide-react';
 
 function iniciais(nome) {
@@ -115,7 +115,10 @@ export default function App() {
   };
 
   return (
-    <div className={`h-screen flex overflow-hidden transition-colors duration-300 ${modoEscuro ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+    <div
+      className={`h-screen flex overflow-hidden transition-colors duration-300 ${modoEscuro ? 'text-slate-100' : 'text-slate-800'}`}
+      style={{ background: modoEscuro ? gradienteFundoEscuro : gradienteFundoClaro }}
+    >
       <NotificacaoToast modoEscuro={modoEscuro} primaryColor={primaryColor} />
 
       <Sidebar
@@ -128,8 +131,8 @@ export default function App() {
       />
 
       <main className="flex-1 flex flex-col min-h-0 min-w-0">
-        {/* Topbar com Toggle Switch Ajustado */}
-        <header className={`h-16 flex-shrink-0 border-b flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        {/* Topbar transparente — deixa o degradê da página aparecer por trás */}
+        <header className={`h-16 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${modoEscuro ? 'bg-slate-900 border-b border-slate-800' : ''}`}>
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -181,120 +184,136 @@ export default function App() {
           {/* ABA DASHBOARD */}
           {abaAtiva === 'dashboard' && (
             <div className="space-y-6">
-              {/* Cabeçalho de boas-vindas: flat, sem gradiente ou brilho decorativo */}
-              <div className="w-full border-l-2 pl-5 py-1" style={{ borderColor: primaryColor }}>
-                <Kicker color={primaryColor}>Bem-vindo de volta</Kicker>
-                <h1 className="text-2xl font-bold mt-1.5">{mockUsuarioCliente.nome}</h1>
-                <p className="text-xs text-slate-400 mt-1">Aqui está um retrato de como sua vida financeira está hoje.</p>
+              {/* Cabeçalho de boas-vindas */}
+              <div>
+                <h1 className={`text-2xl sm:text-3xl font-bold ${modoEscuro ? 'text-white' : 'text-slate-900'}`}>
+                  Olá,{' '}
+                  <span
+                    className="bg-clip-text text-transparent"
+                    style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      backgroundImage: modoEscuro
+                        ? 'linear-gradient(90deg, #C4B5FD 0%, #7C3AED 100%)'
+                        : 'linear-gradient(90deg, #7C3AED 0%, #3B1E77 100%)',
+                    }}
+                  >
+                    {mockUsuarioCliente.nome.split(' ')[0]}
+                  </span>
+                </h1>
+                <p className="text-xs text-slate-500 mt-1">Aqui está um retrato de como sua vida financeira está hoje.</p>
               </div>
 
-              {/* Painel principal: gráfico de gastos + indicadores */}
-              <div className={`p-5 sm:p-6 lg:p-8 rounded-md border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="mb-6">
-                  <h3 className="text-base font-bold">Visão Geral Financeira</h3>
-                  <p className="text-xs text-slate-400 mt-1">Seu saldo, investimentos e para onde seu dinheiro está indo este mês.</p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-center">
-                  <GraficoPizza dados={mockCategoriasGastos} modoEscuro={modoEscuro} />
-
-                  <div className={`w-full divide-y ${modoEscuro ? 'divide-slate-800' : 'divide-slate-100'}`}>
-                    <div className="flex items-center justify-between py-4 first:pt-0">
-                      <div className="flex items-center gap-3">
-                        <IconSquare icon={Wallet} color={primaryColor} />
-                        <div>
-                          <p className="text-xs text-slate-400">Saldo Atual</p>
-                          <p className="text-lg font-bold font-mono">R$ {mockUsuarioCliente.saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-                        </div>
-                      </div>
+              {/* Faixa de indicadores — pílula única, como no dashboard de referência */}
+              <div className={`flex flex-wrap items-center gap-x-10 gap-y-4 px-6 sm:px-8 py-5 rounded-[28px] shadow-sm ${modoEscuro ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+                {[
+                  { label: 'Saldo Atual', valor: mockUsuarioCliente.saldo, icon: Wallet, cor: primaryColor },
+                  { label: 'Gastos do Mês', valor: mockUsuarioCliente.gastosMes, icon: Receipt, cor: '#F43F5E' },
+                  { label: 'Investimentos', valor: mockUsuarioCliente.investimentosTotal, icon: TrendingUp, cor: '#10B981' },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${item.cor}1a` }}>
+                      <item.icon size={19} style={{ color: item.cor }} />
                     </div>
-
-                    <div className="flex items-center justify-between py-4">
-                      <div className="flex items-center gap-3">
-                        <IconSquare icon={Receipt} color="#F43F5E" />
-                        <div>
-                          <p className="text-xs text-slate-400">Gastos do Mês</p>
-                          <p className="text-lg font-bold text-rose-500 font-mono">R$ {mockUsuarioCliente.gastosMes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono font-semibold text-rose-500 border border-rose-500/30 px-2 py-1 rounded-sm">
-                        {((mockUsuarioCliente.gastosMes / mockUsuarioCliente.saldo) * 100).toFixed(0)}% do saldo
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between py-4 last:pb-0">
-                      <div className="flex items-center gap-3">
-                        <IconSquare icon={TrendingUp} color="#10B981" />
-                        <div>
-                          <p className="text-xs text-slate-400">Investimentos</p>
-                          <p className="text-lg font-bold text-emerald-500 font-mono">R$ {mockUsuarioCliente.investimentosTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono font-semibold text-emerald-500 border border-emerald-500/30 px-2 py-1 rounded-sm">
-                        {((mockUsuarioCliente.investimentosTotal / (mockUsuarioCliente.saldo + mockUsuarioCliente.investimentosTotal)) * 100).toFixed(0)}% do patrimônio
-                      </span>
+                    <div>
+                      <p className="text-xs text-slate-500">{item.label}</p>
+                      <p className="text-lg font-bold font-mono">R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
 
-              {/* Atalhos de lembrete: só consulta, edição fica nas próprias áreas */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button
-                  type="button"
-                  onClick={() => setAbaAtiva('metas')}
-                  className={`text-left p-6 rounded-lg border transition hover:-translate-y-0.5 ${modoEscuro ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-bold text-sm flex items-center gap-2">
-                      <Target size={16} style={{ color: primaryColor }} /> Seus Objetivos
-                    </h4>
-                    <ArrowRight size={14} className="text-slate-400" />
-                  </div>
-                  <div className="space-y-4">
-                    {listaMetas.slice(0, 2).map((meta) => {
-                      const progresso = Math.min((meta.valorAtual / meta.valorAlvo) * 100, 100);
-                      return (
-                        <div key={meta.id}>
-                          <div className="flex justify-between text-xs mb-1.5">
-                            <span className="font-semibold">{meta.nome}</span>
-                            <span className="text-slate-400">{progresso.toFixed(0)}%</span>
-                          </div>
-                          <div className={`w-full h-2 rounded-full overflow-hidden ${modoEscuro ? 'bg-slate-950' : 'bg-slate-100'}`}>
-                            <div className="h-full rounded-full" style={{ width: `${progresso}%`, backgroundColor: primaryColor }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </button>
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+                {/* Coluna principal */}
+                <div className="space-y-6">
+                  <div className={`p-5 sm:p-6 lg:p-8 rounded-[28px] shadow-sm ${modoEscuro ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-base font-bold">Visão Geral Financeira</h3>
+                        <p className="text-xs text-slate-500 mt-1">Para onde seu dinheiro está indo este mês.</p>
+                      </div>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => setAbaAtiva('lembretes')}
-                  className={`text-left p-6 rounded-lg border transition hover:-translate-y-0.5 ${modoEscuro ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-bold text-sm flex items-center gap-2">
-                      <Bell size={16} style={{ color: primaryColor }} /> Próximos Lembretes
-                    </h4>
-                    <ArrowRight size={14} className="text-slate-400" />
+                    <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-center">
+                      <GraficoPizza dados={mockCategoriasGastos} modoEscuro={modoEscuro} />
+
+                      <div className={`w-full rounded-2xl p-5 ${modoEscuro ? 'bg-slate-950/60' : 'bg-slate-50'}`}>
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-bold text-sm">Seus Objetivos</h4>
+                          <button type="button" onClick={() => setAbaAtiva('metas')} className="text-slate-400 hover:text-slate-600">
+                            <ArrowRight size={14} />
+                          </button>
+                        </div>
+                        <div className="space-y-4">
+                          {listaMetas.slice(0, 4).map((meta, idx) => {
+                            const progresso = Math.min((meta.valorAtual / meta.valorAlvo) * 100, 100);
+                            return (
+                              <div key={meta.id} className="flex items-center gap-3">
+                                <span
+                                  className="relative w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                                  style={{ backgroundColor: primaryColor }}
+                                >
+                                  {idx + 1}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-semibold truncate">{meta.nome}</p>
+                                  <p className="text-[10px] text-slate-400">{progresso.toFixed(0)}% concluído</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    {listaLembretes
-                      .filter((l) => !l.pago)
-                      .sort((a, b) => a.vencimento.localeCompare(b.vencimento))
-                      .slice(0, 3)
-                      .map((lembrete) => (
-                        <div key={lembrete.id} className="flex items-center justify-between text-xs">
-                          <span className="font-semibold truncate pr-2">{lembrete.titulo}</span>
-                          <span className="text-slate-400 flex-shrink-0">
-                            {new Date(lembrete.vencimento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                          </span>
+                </div>
+
+                {/* Coluna lateral */}
+                <div className="space-y-6">
+                  <button
+                    type="button"
+                    onClick={() => setAbaAtiva('lembretes')}
+                    className="w-full text-left bg-slate-950 rounded-[28px] p-6 text-white relative overflow-hidden"
+                  >
+                    <h4 className="text-lg font-bold mb-4">Próximos Lembretes</h4>
+                    <div className="space-y-4">
+                      {listaLembretes
+                        .filter((l) => !l.pago)
+                        .sort((a, b) => a.vencimento.localeCompare(b.vencimento))
+                        .slice(0, 3)
+                        .map((lembrete) => (
+                          <div key={lembrete.id} className="flex items-start gap-2.5">
+                            <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: primaryColor }} />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold truncate">{lembrete.titulo}</p>
+                              <p className="text-[10px] text-slate-400 mt-0.5">
+                                {new Date(lembrete.vencimento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      {listaLembretes.filter((l) => !l.pago).length === 0 && (
+                        <p className="text-xs text-slate-400">Nenhum lembrete pendente.</p>
+                      )}
+                    </div>
+                  </button>
+
+                  <div className={`p-6 rounded-[28px] shadow-sm ${modoEscuro ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+                    <h4 className="text-base font-bold mb-4">Distribuição de Gastos</h4>
+                    <div className="space-y-3">
+                      {mockCategoriasGastos.map((cat) => (
+                        <div key={cat.nome} className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold truncate">{cat.nome}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">R$ {cat.valor.toFixed(2)}</p>
+                          </div>
+                          <div className={`w-20 h-8 rounded-full flex items-center justify-end px-2.5 flex-shrink-0 ${modoEscuro ? 'bg-slate-950/60' : 'bg-slate-50'}`} style={{ color: cat.cor }}>
+                            <span className="text-xs font-bold font-mono">{cat.porcentagem}%</span>
+                          </div>
                         </div>
                       ))}
+                    </div>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           )}
@@ -303,7 +322,7 @@ export default function App() {
           {abaAtiva === 'gastos' && (
             <div className="space-y-8">
               {/* Form de Cadastro de Gasto */}
-              <div className={`p-6 rounded-lg border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <div className={`p-6 rounded-2xl shadow-sm ${modoEscuro ? 'bg-slate-900/80' : 'bg-white/80'}`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold flex items-center gap-2">
                     <Plus size={18} style={{ color: primaryColor }} /> Cadastrar Novo Gasto
@@ -361,37 +380,66 @@ export default function App() {
               </div>
 
               {/* Tabela de Gastos */}
-              <div className={`p-6 rounded-lg border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="flex items-center justify-between mb-4 gap-3">
+              <div className={`p-6 rounded-2xl shadow-sm ${modoEscuro ? 'bg-slate-900/80' : 'bg-white/80'}`}>
+                <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
                   <h3 className="text-base font-bold">Histórico de Gastos Cadastrados</h3>
-                  <button
-                    type="button"
-                    style={{ borderColor: primaryColor, color: primaryColor }}
-                    className="flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-md border hover:opacity-80 transition flex-shrink-0"
-                  >
-                    <RefreshCcw size={14} /> Cadastrar seu extrato automático
-                  </button>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <button
+                      type="button"
+                      style={{ borderColor: primaryColor, color: primaryColor }}
+                      className="flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-md border hover:opacity-80 transition"
+                    >
+                      <RefreshCcw size={14} /> Cadastrar seu extrato automático
+                    </button>
+                    <div className={`flex items-center gap-1 ${modoEscuro ? 'text-slate-500' : 'text-slate-400'}`}>
+                      <button type="button" className="p-2 rounded-md hover:opacity-70 transition" style={{ color: primaryColor }}>
+                        <Pencil size={15} />
+                      </button>
+                      <button type="button" className="p-2 rounded-md hover:opacity-70 transition" style={{ color: primaryColor }}>
+                        <Printer size={15} />
+                      </button>
+                      <button type="button" className="p-2 rounded-md hover:opacity-70 transition" style={{ color: primaryColor }}>
+                        <Settings size={15} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  {listaGastos.map((gasto) => (
+
+                {/* Cabeçalho de colunas — some em telas estreitas */}
+                <div className={`hidden sm:grid grid-cols-[2fr_1.2fr_1fr_1fr] gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400`}>
+                  <span>Descrição</span>
+                  <span>Categoria</span>
+                  <span>Data</span>
+                  <span className="text-right">Valor</span>
+                </div>
+
+                <div className="space-y-2">
+                  {listaGastos.slice(0, 8).map((gasto) => (
                     <div
                       key={gasto.id}
-                      className={`flex justify-between items-center p-4 rounded-md border transition ${
-                        modoEscuro ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-100'
+                      className={`grid grid-cols-1 sm:grid-cols-[2fr_1.2fr_1fr_1fr] gap-1 sm:gap-3 items-center p-4 rounded-xl transition ${
+                        modoEscuro ? 'bg-slate-950/60 hover:bg-slate-950' : 'bg-slate-50 hover:bg-slate-100'
                       }`}
                     >
-                      <div>
-                        <p className="font-semibold text-xs">{gasto.descricao}</p>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-sm border mt-1 inline-block ${modoEscuro ? 'border-slate-700 text-slate-400' : 'border-slate-300 text-slate-500'}`}>
-                          {gasto.categoria}
-                        </span>
-                      </div>
-                      <span className="font-bold text-xs text-rose-500 font-mono">
+                      <p className="font-semibold text-xs">{gasto.descricao}</p>
+                      <span className="text-[11px] text-slate-400">{gasto.categoria}</span>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        {new Date(gasto.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      </span>
+                      <span className="font-bold text-xs text-rose-500 font-mono sm:text-right">
                         - R$ {gasto.valor.toFixed(2)}
                       </span>
                     </div>
                   ))}
                 </div>
+
+                {listaGastos.length > 8 && (
+                  <div className="flex justify-end mt-4">
+                    <button type="button" className="text-xs font-bold hover:underline" style={{ color: primaryColor }}>
+                      Mostrar mais...
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
