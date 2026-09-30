@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { CalendarOff, CalendarPlus, Check, Clock, Trash2, User } from 'lucide-react';
-import Calendario from './Calendario';
-import { mockDisponibilidade, mockDiasBloqueados, mockAgendamentos } from '../data/mockAgenda';
-import { NOMES_DIAS_SEMANA, formatarDataISO } from '../utils/agenda';
+import { CalendarOff, Check, Clock, Settings2, Trash2, User, X } from 'lucide-react';
+import CalendarioMensalContador from './CalendarioMensalContador';
+import { mockDisponibilidade, mockDiasBloqueados, mockAgendamentos, mockFeriados } from '../data/mockAgenda';
+import { NOMES_DIAS_SEMANA, formatarDataISO, gerarGradeMesCompleta } from '../utils/agenda';
 
 const DURACOES = [30, 45, 60, 90];
 
@@ -13,8 +13,14 @@ export default function AbaAgendaContador({ modoEscuro, primaryColor }) {
   const [agendamentos, setAgendamentos] = useState(mockAgendamentos);
 
   const [mesReferencia, setMesReferencia] = useState(new Date());
-  const [diaSelecionado, setDiaSelecionado] = useState(null);
+  const [diaSelecionado, setDiaSelecionado] = useState(formatarDataISO(new Date()));
   const [motivoBloqueio, setMotivoBloqueio] = useState('');
+  const [horarioAberto, setHorarioAberto] = useState(false);
+
+  const celulas = useMemo(
+    () => gerarGradeMesCompleta(mesReferencia.getFullYear(), mesReferencia.getMonth()),
+    [mesReferencia]
+  );
 
   const diasComAgendamento = useMemo(
     () => new Set(agendamentos.map((a) => a.data)),
@@ -27,6 +33,9 @@ export default function AbaAgendaContador({ modoEscuro, primaryColor }) {
     return 'normal';
   };
 
+  const feriadoDoDia = (dataStr) => mockFeriados.find((f) => f.data === dataStr) || null;
+  const temAgendamento = (dataStr) => diasComAgendamento.has(dataStr);
+
   const agendamentosDoDia = diaSelecionado
     ? agendamentos.filter((a) => a.data === diaSelecionado).sort((a, b) => a.horario.localeCompare(b.horario))
     : [];
@@ -34,10 +43,6 @@ export default function AbaAgendaContador({ modoEscuro, primaryColor }) {
   const diaSelecionadoBloqueado = diaSelecionado
     ? diasBloqueados.find((d) => d.data === diaSelecionado)
     : null;
-
-  const proximosAgendamentos = agendamentos
-    .filter((a) => a.data >= formatarDataISO(new Date()))
-    .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
 
   const haAlteracoesPendentes = JSON.stringify(rascunho) !== JSON.stringify(disponibilidade);
 
@@ -75,140 +80,41 @@ export default function AbaAgendaContador({ modoEscuro, primaryColor }) {
     setAgendamentos((prev) => prev.filter((a) => a.id !== id));
   };
 
-  const dataFormatada = (dataStr) => new Date(dataStr + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  const dataFormatada = (dataStr) => new Date(dataStr + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-bold">Agenda</h1>
-        <p className="text-xs text-slate-400 mt-1">Veja seus agendamentos e defina quando você está disponível para atender.</p>
-      </div>
-
-      {/* Próximos agendamentos logo no topo — é a informação mais consultada no dia a dia */}
-      <div className={`rounded-lg border overflow-hidden ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-        <div className={`px-5 py-2.5 flex items-center gap-2 ${modoEscuro ? 'bg-slate-950/40' : 'bg-slate-50'}`}>
-          <CalendarPlus size={13} className="text-slate-400" />
-          <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Próximos agendamentos</h4>
-        </div>
-        {proximosAgendamentos.length === 0 ? (
-          <p className="text-xs text-slate-400 px-5 py-4">Nenhum agendamento futuro.</p>
-        ) : (
-          <div className={`divide-y ${modoEscuro ? 'divide-slate-800' : 'divide-slate-100'}`}>
-            {proximosAgendamentos.map((a) => (
-              <div key={a.id} className="flex items-center gap-4 px-5 py-3">
-                <div className="text-center flex-shrink-0 w-16">
-                  <p className="text-[10px] text-slate-400">{dataFormatada(a.data)}</p>
-                  <p className="text-sm font-bold font-mono">{a.horario}</p>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{a.clienteNome}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{a.assunto}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleCancelarAgendamento(a.id)}
-                  title="Cancelar agendamento"
-                  className="flex-shrink-0"
-                >
-                  <Trash2 size={14} className="text-slate-400 hover:text-rose-500 transition" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Calendário compacto — o foco da página já é a lista acima, então ele ocupa menos espaço */}
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_320px] gap-6">
-        <div className={`p-5 rounded-lg border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <Calendario
-            mesReferencia={mesReferencia}
-            onMudarMes={setMesReferencia}
-            diaSelecionado={diaSelecionado}
-            onSelecionarDia={setDiaSelecionado}
-            statusDia={statusDia}
-            modoEscuro={modoEscuro}
-            primaryColor={primaryColor}
-            permitirDiasPassados
-          />
-          <div className="flex items-center gap-4 mt-4 text-[10px] text-slate-400">
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} /> agendamento</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-400" /> bloqueado</span>
-          </div>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-bold">Agenda</h1>
+          <p className="text-xs text-slate-400 mt-1">Veja seus agendamentos e defina quando você está disponível para atender.</p>
         </div>
 
-        <div className={`p-5 rounded-lg border ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          {!diaSelecionado ? (
-            <div className="h-full flex flex-col items-center justify-center text-center py-8">
-              <Clock size={24} className="text-slate-400 mb-2" />
-              <p className="text-xs text-slate-400">Selecione um dia para ver os atendimentos ou bloquear a agenda.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{dataFormatada(diaSelecionado)}</p>
-
-              {agendamentosDoDia.length > 0 && (
-                <div className={`rounded-md border divide-y ${modoEscuro ? 'border-slate-800 divide-slate-800' : 'border-slate-200 divide-slate-100'}`}>
-                  {agendamentosDoDia.map((a) => (
-                    <div key={a.id} className="flex items-center gap-3 p-3">
-                      <span className="text-sm font-bold font-mono flex-shrink-0">{a.horario}</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold flex items-center gap-1 truncate"><User size={11} className="flex-shrink-0" /> {a.clienteNome}</p>
-                        <p className="text-[10px] text-slate-400 truncate">{a.assunto}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleCancelarAgendamento(a.id)}
-                        title="Cancelar agendamento"
-                        className="flex-shrink-0"
-                      >
-                        <Trash2 size={14} className="text-slate-400 hover:text-rose-500 transition" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {diaSelecionadoBloqueado ? (
-                <div className={`p-3 rounded-md border text-xs ${modoEscuro ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                  <p className="font-semibold flex items-center gap-1.5 text-rose-500"><CalendarOff size={13} /> Dia bloqueado</p>
-                  <p className="text-slate-400 mt-1">{diaSelecionadoBloqueado.motivo}</p>
-                  <button
-                    type="button"
-                    onClick={handleDesbloquearDiaSelecionado}
-                    className="text-xs font-bold mt-2"
-                    style={{ color: primaryColor }}
-                  >
-                    Desbloquear este dia
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Motivo (ex: Feriado, compromisso pessoal)"
-                    value={motivoBloqueio}
-                    onChange={(e) => setMotivoBloqueio(e.target.value)}
-                    className={`w-full p-2.5 rounded-md border text-xs outline-none ${modoEscuro ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleBloquearDiaSelecionado}
-                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-md border text-xs font-bold transition hover:opacity-80 ${modoEscuro ? 'border-slate-800' : 'border-slate-200'}`}
-                  >
-                    <CalendarOff size={14} /> Bloquear este dia
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => setHorarioAberto((v) => !v)}
+          className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition hover:opacity-80"
+          style={{ backgroundColor: `${primaryColor}1f`, color: primaryColor }}
+        >
+          <Clock size={13} /> Horário de trabalho
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {horarioAberto && (
         <div className={`p-4 sm:p-6 rounded-lg border space-y-4 ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-bold">Horário de trabalho</h3>
+            <button
+              type="button"
+              onClick={() => setHorarioAberto(false)}
+              className="text-slate-400 hover:text-slate-600 flex-shrink-0"
+              title="Ocultar horário de trabalho"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-end">
             <div className="space-y-1">
               <label className="text-[10px] text-slate-400 uppercase tracking-wider block text-right">Duração do atendimento</label>
               <select
@@ -297,30 +203,113 @@ export default function AbaAgendaContador({ modoEscuro, primaryColor }) {
             {haAlteracoesPendentes ? 'Salvar horário' : <><Check size={14} /> Horário salvo</>}
           </button>
         </div>
+      )}
 
-        <div className={`rounded-lg border overflow-hidden ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="p-4 sm:p-6 pb-0">
-            <h3 className="text-sm font-bold mb-1">Dias indisponíveis</h3>
-            <p className="text-xs text-slate-400 mb-4">Selecione um dia no calendário para bloqueá-lo.</p>
-          </div>
-          {diasBloqueados.length === 0 ? (
-            <p className="text-xs text-slate-400 px-4 sm:px-6 pb-6">Nenhum dia bloqueado no momento.</p>
+      {/* Calendário mensal cheio + painel do dia selecionado */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_260px] gap-6 items-start">
+        <CalendarioMensalContador
+          celulas={celulas}
+          mesReferencia={mesReferencia}
+          onMudarMes={setMesReferencia}
+          diaSelecionado={diaSelecionado}
+          onSelecionarDia={setDiaSelecionado}
+          statusDia={statusDia}
+          feriadoDoDia={feriadoDoDia}
+          temAgendamento={temAgendamento}
+          modoEscuro={modoEscuro}
+          primaryColor={primaryColor}
+        />
+
+        <div className={`rounded-lg border p-4 ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+          {!diaSelecionado ? (
+            <div className="flex flex-col items-center justify-center text-center py-8">
+              <Clock size={22} className="text-slate-400 mb-2" />
+              <p className="text-xs text-slate-400">Selecione um dia para ver os atendimentos ou bloquear a agenda.</p>
+            </div>
           ) : (
-            <div className={`divide-y ${modoEscuro ? 'divide-slate-800' : 'divide-slate-100'}`}>
-              {[...diasBloqueados].sort((a, b) => a.data.localeCompare(b.data)).map((d) => (
-                <div key={d.data} className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold">{dataFormatada(d.data)}</p>
-                    <p className="text-[10px] text-slate-400 truncate">{d.motivo}</p>
-                  </div>
-                  <button type="button" onClick={() => handleRemoverBloqueio(d.data)} className="flex-shrink-0">
-                    <Trash2 size={14} className="text-slate-400 hover:text-rose-500 transition" />
+            <div className="space-y-4">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{dataFormatada(diaSelecionado)}</p>
+
+              {agendamentosDoDia.length > 0 && (
+                <div className={`rounded-md border divide-y ${modoEscuro ? 'border-slate-800 divide-slate-800' : 'border-slate-200 divide-slate-100'}`}>
+                  {agendamentosDoDia.map((a) => (
+                    <div key={a.id} className="flex items-center gap-2.5 p-2.5">
+                      <span className="text-xs font-bold font-mono flex-shrink-0">{a.horario}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold flex items-center gap-1 truncate"><User size={10} className="flex-shrink-0" /> {a.clienteNome}</p>
+                        <p className="text-[10px] text-slate-400 truncate">{a.assunto}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCancelarAgendamento(a.id)}
+                        title="Cancelar agendamento"
+                        className="flex-shrink-0"
+                      >
+                        <Trash2 size={13} className="text-slate-400 hover:text-rose-500 transition" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {diaSelecionadoBloqueado ? (
+                <div className={`p-3 rounded-md border text-xs ${modoEscuro ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                  <p className="font-semibold flex items-center gap-1.5 text-rose-500"><CalendarOff size={13} /> Dia bloqueado</p>
+                  <p className="text-slate-400 mt-1">{diaSelecionadoBloqueado.motivo}</p>
+                  <button
+                    type="button"
+                    onClick={handleDesbloquearDiaSelecionado}
+                    className="text-xs font-bold mt-2"
+                    style={{ color: primaryColor }}
+                  >
+                    Desbloquear este dia
                   </button>
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Motivo (ex: Feriado, compromisso pessoal)"
+                    value={motivoBloqueio}
+                    onChange={(e) => setMotivoBloqueio(e.target.value)}
+                    className={`w-full p-2.5 rounded-md border text-xs outline-none ${modoEscuro ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleBloquearDiaSelecionado}
+                    className={`w-full py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wide transition hover:opacity-80 ${modoEscuro ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700'}`}
+                  >
+                    Bloquear esse dia
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
+      </div>
+
+      <div className={`rounded-lg border overflow-hidden ${modoEscuro ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+        <div className="p-4 sm:p-6 pb-0">
+          <h3 className="text-sm font-bold mb-1">Dias indisponíveis</h3>
+          <p className="text-xs text-slate-400 mb-4">Selecione um dia no calendário para bloqueá-lo.</p>
+        </div>
+        {diasBloqueados.length === 0 ? (
+          <p className="text-xs text-slate-400 px-4 sm:px-6 pb-6">Nenhum dia bloqueado no momento.</p>
+        ) : (
+          <div className={`divide-y ${modoEscuro ? 'divide-slate-800' : 'divide-slate-100'}`}>
+            {[...diasBloqueados].sort((a, b) => a.data.localeCompare(b.data)).map((d) => (
+              <div key={d.data} className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold">{dataFormatada(d.data)}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{d.motivo}</p>
+                </div>
+                <button type="button" onClick={() => handleRemoverBloqueio(d.data)} className="flex-shrink-0">
+                  <Trash2 size={14} className="text-slate-400 hover:text-rose-500 transition" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

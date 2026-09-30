@@ -3,6 +3,11 @@ export const NOMES_MESES = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ];
+export const ABREV_DIAS_SEMANA = ['dom.', 'seg.', 'ter.', 'qua.', 'qui.', 'sex.', 'sáb.'];
+export const ABREV_MESES = [
+  'jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.',
+  'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.',
+];
 
 export function formatarDataISO(date) {
   const ano = date.getFullYear();
@@ -27,6 +32,29 @@ function paraHoraStr(minutos) {
 export function diaDaSemana(dataStr) {
   const [ano, mes, dia] = dataStr.split('-').map(Number);
   return new Date(ano, mes - 1, dia).getDay();
+}
+
+// Grade completa de 6 semanas (42 células) incluindo os dias das pontas
+// dos meses vizinhos, para exibir um calendário mensal "cheio" como o
+// Google Calendar — cada célula sabe se pertence ao mês de referência.
+export function gerarGradeMesCompleta(ano, mes) {
+  const offset = new Date(ano, mes, 1).getDay();
+  const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
+  const totalDiasMesAnterior = new Date(ano, mes, 0).getDate();
+
+  const celulas = [];
+  for (let i = offset - 1; i >= 0; i--) {
+    celulas.push({ data: new Date(ano, mes - 1, totalDiasMesAnterior - i), foraDoMes: true });
+  }
+  for (let dia = 1; dia <= totalDiasMes; dia++) {
+    celulas.push({ data: new Date(ano, mes, dia), foraDoMes: false });
+  }
+  let proximoDia = 1;
+  while (celulas.length < 42) {
+    celulas.push({ data: new Date(ano, mes + 1, proximoDia), foraDoMes: true });
+    proximoDia += 1;
+  }
+  return celulas;
 }
 
 // Monta a grade de um mês: array de { data: Date|null } incluindo os

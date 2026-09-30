@@ -12,10 +12,10 @@ export const mockClientesContador = [
     gastosMes: 2450.00,
     investimentosTotal: 15300.00,
     categorias: [
-      { nome: "Gastos Fixos", valor: 1100.00, cor: "#4C1D95", porcentagem: 45 },
+      { nome: "Gastos Fixos", valor: 1100.00, cor: "#3B1E77", porcentagem: 45 },
       { nome: "Alimentação & Mercado", valor: 660.00, cor: "#7C3AED", porcentagem: 27 },
       { nome: "Desejos & Lazer", valor: 390.00, cor: "#A78BFA", porcentagem: 16 },
-      { nome: "Emergências & Saúde", valor: 300.00, cor: "#C4B5FD", porcentagem: 12 },
+      { nome: "Emergências & Saúde", valor: 300.00, cor: "#D9CCFB", porcentagem: 12 },
     ],
     metas: [
       { id: 1, nome: "Reserva de emergência", valorAlvo: 10000.00, valorAtual: 4200.00, prazo: "2027-02-01" },
@@ -35,10 +35,10 @@ export const mockClientesContador = [
     gastosMes: 4180.00,
     investimentosTotal: 41200.00,
     categorias: [
-      { nome: "Gastos Fixos", valor: 1900.00, cor: "#4C1D95", porcentagem: 45 },
+      { nome: "Gastos Fixos", valor: 1900.00, cor: "#3B1E77", porcentagem: 45 },
       { nome: "Alimentação & Mercado", valor: 1050.00, cor: "#7C3AED", porcentagem: 25 },
       { nome: "Desejos & Lazer", valor: 830.00, cor: "#A78BFA", porcentagem: 20 },
-      { nome: "Emergências & Saúde", valor: 400.00, cor: "#C4B5FD", porcentagem: 10 },
+      { nome: "Emergências & Saúde", valor: 400.00, cor: "#D9CCFB", porcentagem: 10 },
     ],
     metas: [
       { id: 1, nome: "Entrada do apartamento", valorAlvo: 60000.00, valorAtual: 38400.00, prazo: "2027-06-01" },
@@ -58,10 +58,10 @@ export const mockClientesContador = [
     gastosMes: 3020.00,
     investimentosTotal: 6800.00,
     categorias: [
-      { nome: "Gastos Fixos", valor: 1550.00, cor: "#4C1D95", porcentagem: 51 },
+      { nome: "Gastos Fixos", valor: 1550.00, cor: "#3B1E77", porcentagem: 51 },
       { nome: "Alimentação & Mercado", valor: 720.00, cor: "#7C3AED", porcentagem: 24 },
       { nome: "Desejos & Lazer", valor: 450.00, cor: "#A78BFA", porcentagem: 15 },
-      { nome: "Emergências & Saúde", valor: 300.00, cor: "#C4B5FD", porcentagem: 10 },
+      { nome: "Emergências & Saúde", valor: 300.00, cor: "#D9CCFB", porcentagem: 10 },
     ],
     metas: [
       { id: 1, nome: "Quitar o financiamento do carro", valorAlvo: 18000.00, valorAtual: 5400.00, prazo: "2028-04-01" },
