@@ -10,6 +10,7 @@ import NotificacaoToast from './components/NotificacaoToast';
 import GraficoPizza from './components/GraficoPizza';
 import BolhaIA from './components/BolhaIA';
 import ContadorApp from './components/ContadorApp';
+import CarregandoExtratoModal from './components/CarregandoExtratoModal';
 import { gradienteFundoClaro, gradienteFundoEscuro } from './theme';
 import {
   mockUsuarioCliente,
@@ -34,8 +35,10 @@ export default function App() {
   const [modoEscuro, setModoEscuro] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
 
-  // Estado dos gastos cadastrados
-  const [listaGastos, setListaGastos] = useState(mockGastosIniciais);
+  // Estado dos gastos cadastrados — começa vazio até o extrato automático ser carregado
+  const [listaGastos, setListaGastos] = useState([]);
+  const [carregandoExtrato, setCarregandoExtrato] = useState(false);
+  const [extratoCarregado, setExtratoCarregado] = useState(false);
   const [novoGasto, setNovoGasto] = useState({
     descricao: '',
     categoria: 'Gastos Fixos',
@@ -89,6 +92,16 @@ export default function App() {
     });
   };
 
+  const handleCadastrarExtratoAutomatico = () => {
+    if (carregandoExtrato) return;
+    setCarregandoExtrato(true);
+    setTimeout(() => {
+      setListaGastos(mockGastosIniciais);
+      setExtratoCarregado(true);
+      setCarregandoExtrato(false);
+    }, 2000);
+  };
+
   const handleAdicionarLembrete = (lembrete) => {
     setListaLembretes([lembrete, ...listaLembretes]);
   };
@@ -120,6 +133,7 @@ export default function App() {
       style={{ background: modoEscuro ? gradienteFundoEscuro : gradienteFundoClaro }}
     >
       <NotificacaoToast modoEscuro={modoEscuro} primaryColor={primaryColor} />
+      {carregandoExtrato && <CarregandoExtratoModal modoEscuro={modoEscuro} />}
 
       <Sidebar
         abaAtiva={abaAtiva}
@@ -386,10 +400,13 @@ export default function App() {
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <button
                       type="button"
+                      onClick={handleCadastrarExtratoAutomatico}
+                      disabled={carregandoExtrato || extratoCarregado}
                       style={{ borderColor: primaryColor, color: primaryColor }}
-                      className="flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-md border hover:opacity-80 transition"
+                      className="flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-md border hover:opacity-80 transition disabled:opacity-50"
                     >
-                      <RefreshCcw size={14} /> Cadastrar seu extrato automático
+                      <RefreshCcw size={14} className={carregandoExtrato ? 'animate-spin' : ''} />
+                      {extratoCarregado ? 'Extrato importado' : 'Cadastrar seu extrato automático'}
                     </button>
                     <div className={`flex items-center gap-1 ${modoEscuro ? 'text-slate-500' : 'text-slate-400'}`}>
                       <button type="button" className="p-2 rounded-md hover:opacity-70 transition" style={{ color: primaryColor }}>
@@ -405,6 +422,16 @@ export default function App() {
                   </div>
                 </div>
 
+                {listaGastos.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center py-12">
+                    <RefreshCcw size={22} className="text-slate-400 mb-3" />
+                    <p className="text-sm font-semibold">Nenhum gasto por aqui ainda</p>
+                    <p className="text-xs text-slate-400 mt-1 max-w-xs">
+                      Cadastre seu gasto manualmente acima ou clique em "Cadastrar seu extrato automático" para importar seu histórico.
+                    </p>
+                  </div>
+                ) : (
+                <>
                 {/* Cabeçalho de colunas — some em telas estreitas */}
                 <div className={`hidden sm:grid grid-cols-[2fr_1.2fr_1fr_1fr] gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400`}>
                   <span>Descrição</span>
@@ -439,6 +466,8 @@ export default function App() {
                       Mostrar mais...
                     </button>
                   </div>
+                )}
+                </>
                 )}
               </div>
             </div>
