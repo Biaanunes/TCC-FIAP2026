@@ -96,15 +96,15 @@ export const mockUsuarioCliente = {
   ];
 
   export const mockLembretes = [
-    { id: 1, titulo: "Fatura do Cartão de Crédito", valor: 890.00, vencimento: "2026-09-18", pago: false, recorrente: true },
-    { id: 2, titulo: "Seguro do Carro", valor: 210.00, vencimento: "2026-09-20", pago: false, recorrente: false },
-    { id: 3, titulo: "Mensalidade da Academia", valor: 130.00, vencimento: "2026-09-23", pago: false, recorrente: true },
-    { id: 4, titulo: "Aluguel", valor: 1200.00, vencimento: "2026-09-25", pago: false, recorrente: true },
-    { id: 5, titulo: "Internet", valor: 99.90, vencimento: "2026-09-28", pago: false, recorrente: true },
-    { id: 6, titulo: "Plano de Saúde", valor: 340.00, vencimento: "2026-10-05", pago: false, recorrente: true },
-    { id: 7, titulo: "IPVA", valor: 620.00, vencimento: "2026-10-15", pago: false, recorrente: false },
-    { id: 8, titulo: "Conta de Água", valor: 95.00, vencimento: "2026-09-12", pago: true, recorrente: true },
-    { id: 9, titulo: "Conta de Luz", valor: 210.00, vencimento: "2026-09-10", pago: true, recorrente: true },
+    { id: 1, titulo: "Fatura do Cartão de Crédito", valor: 890.00, vencimento: "2026-09-25", pago: false, recorrente: true },
+    { id: 2, titulo: "Seguro do Carro", valor: 210.00, vencimento: "2026-09-27", pago: false, recorrente: false },
+    { id: 3, titulo: "Aluguel", valor: 1200.00, vencimento: "2026-10-02", pago: false, recorrente: true },
+    { id: 4, titulo: "Mensalidade da Academia", valor: 130.00, vencimento: "2026-10-02", pago: false, recorrente: true },
+    { id: 5, titulo: "Internet", valor: 99.90, vencimento: "2026-10-07", pago: false, recorrente: true },
+    { id: 6, titulo: "Plano de Saúde", valor: 340.00, vencimento: "2026-10-09", pago: false, recorrente: true },
+    { id: 7, titulo: "Última parcela da Santa Lola", valor: 450.00, vencimento: "2026-10-20", pago: false, recorrente: false },
+    { id: 8, titulo: "IPVA", valor: 620.00, vencimento: "2026-10-25", pago: false, recorrente: false },
+    { id: 9, titulo: "Conta de Água", valor: 95.00, vencimento: "2026-09-12", pago: true, recorrente: true },
   ];
 
   export const mockMetas = [

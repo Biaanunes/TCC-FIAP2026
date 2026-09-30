@@ -55,7 +55,7 @@ export default function App() {
   const primaryColor = modoEscuro ? '#A78BFA' : '#7C3AED';
 
   if (!logado) {
-    return <Auth onLogin={(tipo) => { setLogado(true); setTipoConta(tipo); }} />;
+    return <Auth onLogin={(tipo) => { setLogado(true); setTipoConta(tipo); }} modoEscuro={modoEscuro} />;
   }
 
   if (tipoConta === 'contador') {

@@ -1,0 +1,279 @@
+/* =========================================================
+   Fintar hero art — cruz 3D + pedestal + névoa
+   Adaptado da referência para se encaixar no fundo do login.
+   Sistema de coordenadas interno: 600 × 648.
+   ========================================================= */
+
+.fintar-hero-art {
+  --violet-900: #452c92;
+  --violet-700: #573ca6;
+  --violet-400: #9c7df4;
+
+  /* Geometria da cruz (viewBox 440 × 440) */
+  --plus-outer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 440'%3E%3Cpath d='M191 0H249A56 56 0 0 1 305 56V99A36 36 0 0 0 341 135H384A56 56 0 0 1 440 191V249A56 56 0 0 1 384 305H341A36 36 0 0 0 305 341V384A56 56 0 0 1 249 440H191A56 56 0 0 1 135 384V341A36 36 0 0 0 99 305H56A56 56 0 0 1 0 249V191A56 56 0 0 1 56 135H99A36 36 0 0 0 135 99V56A56 56 0 0 1 191 0Z'/%3E%3C/svg%3E");
+  --plus-inner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 440'%3E%3Cpath d='M191 17H249A39 39 0 0 1 288 56V99A53 53 0 0 0 341 152H384A39 39 0 0 1 423 191V249A39 39 0 0 1 384 288H341A53 53 0 0 0 288 341V384A39 39 0 0 1 249 423H191A39 39 0 0 1 152 384V341A53 53 0 0 0 99 288H56A39 39 0 0 1 17 249V191A39 39 0 0 1 56 152H99A53 53 0 0 0 152 99V56A39 39 0 0 1 191 17Z'/%3E%3C/svg%3E");
+
+  position: relative;
+  width: min(480px, 100%);
+  aspect-ratio: 600 / 648;
+  pointer-events: none;
+}
+
+/* luz difusa atrás do objeto */
+.fintar-hero-art::before {
+  content: "";
+  position: absolute;
+  inset: -4% 2% 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(236, 222, 255, 0.55), rgba(190, 160, 250, 0.25) 60%, transparent);
+  filter: blur(20px);
+}
+
+/* ---- Cruz ---- */
+
+.fintar-hero-art .cross {
+  position: absolute;
+  z-index: 3;
+  top: 3.9%;
+  left: 50%;
+  width: 71%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+}
+
+.fintar-hero-art .cross__halo,
+.fintar-hero-art .cross__rim,
+.fintar-hero-art .cross__body {
+  position: absolute;
+  inset: 0;
+}
+
+.fintar-hero-art .cross__halo::before,
+.fintar-hero-art .cross__rim::before,
+.fintar-hero-art .cross__body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  -webkit-mask: var(--plus-outer) center / 100% 100% no-repeat;
+  mask: var(--plus-outer) center / 100% 100% no-repeat;
+}
+
+/* brilho externo */
+.fintar-hero-art .cross__halo {
+  filter: blur(24px);
+}
+
+.fintar-hero-art .cross__halo::before {
+  scale: 1.1;
+  background: linear-gradient(180deg, #c7aef6, #bf9ff0 55%, #d9aef0);
+}
+
+/* borda luminosa (vidro fosco) */
+.fintar-hero-art .cross__rim {
+  filter: blur(1.5px) drop-shadow(0 0 7px rgba(255, 255, 255, 0.85));
+}
+
+.fintar-hero-art .cross__rim::before {
+  background:
+    radial-gradient(30% 50% at 0% 55%, rgba(255, 220, 248, 0.9), transparent),
+    radial-gradient(40% 30% at 50% 100%, rgba(255, 214, 246, 0.95), transparent),
+    linear-gradient(180deg, #faf5ff 0%, #efe4ff 50%, #f7e2fb 100%);
+}
+
+/* núcleo violeta — o blur cria a transição suave para a borda */
+.fintar-hero-art .cross__body {
+  filter: blur(9px);
+}
+
+.fintar-hero-art .cross__body::before {
+  -webkit-mask-image: var(--plus-inner);
+  mask-image: var(--plus-inner);
+  background:
+    radial-gradient(30% 22% at 12% 50%, rgba(170, 110, 210, 0.22), transparent),
+    radial-gradient(26% 20% at 50% 92%, rgba(178, 132, 214, 0.75), transparent),
+    radial-gradient(38% 34% at 50% 44%, var(--violet-900), transparent 80%),
+    linear-gradient(180deg, #4a3096 0%, var(--violet-700) 60%, #7e5bb8 100%);
+}
+
+/* Letra "C" desenhada em CSS: anel − retângulo */
+.fintar-hero-art .cross__mark {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 2.4%);
+  width: 31.8%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  filter:
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.55))
+    drop-shadow(0 0 26px rgba(214, 196, 255, 0.55));
+}
+
+.fintar-hero-art .cross__mark span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #fff, #f6f1ff);
+  -webkit-mask:
+    radial-gradient(closest-side, transparent 60.5%, #000 61.5% 98.5%, transparent 100%),
+    linear-gradient(#000 0 0) 100% 50% / 50% 29% no-repeat;
+  -webkit-mask-composite: source-out;
+  mask:
+    radial-gradient(closest-side, transparent 60.5%, #000 61.5% 98.5%, transparent 100%) subtract,
+    linear-gradient(#000 0 0) 100% 50% / 50% 29% no-repeat;
+}
+
+/* ---- Pedestal ---- */
+
+.fintar-hero-art .pedestal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* brilho violeta sob a base */
+.fintar-hero-art .pedestal::after {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 76%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(132, 96, 240, 0.55), transparent);
+  filter: blur(18px);
+}
+
+.fintar-hero-art .tier {
+  --side-1: #cbb6f6;
+  --side-2: #bea5f3;
+  --side-3: #b297f0;
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  aspect-ratio: 4.6;
+  translate: -50% 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(55% 60% at 50% 42%, rgba(255, 244, 255, 0.55), transparent 80%),
+    linear-gradient(180deg, #e6d9fc, #cdb8f6);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -5px 10px rgba(255, 255, 255, 0.3),
+    0 3px 0 var(--side-1),
+    0 6px 0 var(--side-2),
+    0 9px 0 var(--side-3),
+    0 11px 0 rgba(255, 255, 255, 0.8),
+    0 16px 30px rgba(120, 88, 220, 0.3);
+}
+
+.fintar-hero-art .tier:nth-child(1) {
+  z-index: 5;
+  top: 63.3%;
+  width: 57.5%;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -5px 10px rgba(255, 255, 255, 0.35),
+    0 3px 0 var(--side-1),
+    0 6px 0 var(--side-2),
+    0 9px 0 var(--side-2),
+    0 12px 0 var(--side-2),
+    0 15px 0 var(--side-3),
+    0 17px 0 rgba(255, 255, 255, 0.85),
+    0 18px 30px rgba(120, 88, 220, 0.3);
+}
+
+.fintar-hero-art .tier:nth-child(2) { z-index: 4; top: 66.2%; width: 64.2%; }
+.fintar-hero-art .tier:nth-child(3) { z-index: 3; top: 69.9%; width: 72.5%; }
+.fintar-hero-art .tier:nth-child(4) { z-index: 2; top: 74.4%; width: 77.5%; filter: blur(0.6px); }
+.fintar-hero-art .tier:nth-child(5) { z-index: 1; top: 77.3%; width: 90%; filter: blur(1.4px); }
+
+/* degraus inferiores mais saturados, como na referência */
+.fintar-hero-art .tier:nth-child(n + 3) {
+  --side-1: #a88ef2;
+  --side-2: #9d80f0;
+  --side-3: #9476ee;
+  background:
+    radial-gradient(55% 60% at 50% 40%, rgba(236, 222, 255, 0.45), transparent 80%),
+    linear-gradient(180deg, #b9a1f6, var(--violet-400));
+}
+
+/* ---- Nuvens / névoa ---- */
+
+.fintar-hero-art .cloud {
+  position: absolute;
+  z-index: 4;
+  filter: blur(9px);
+  opacity: 0.92;
+}
+
+.fintar-hero-art .cloud--left {
+  left: -16%;
+  top: 53%;
+  width: 54%;
+  height: 28%;
+  background:
+    radial-gradient(14% 26% at 22% 44%, #fff8fd 0 55%, transparent),
+    radial-gradient(15% 30% at 38% 36%, #fff3fc 0 55%, transparent),
+    radial-gradient(14% 26% at 55% 44%, #fbeafa 0 55%, transparent),
+    radial-gradient(15% 26% at 72% 58%, #f6e0f8 0 50%, transparent),
+    radial-gradient(18% 28% at 88% 74%, rgba(240, 212, 246, 0.9) 0 45%, transparent),
+    radial-gradient(22% 30% at 8% 64%, rgba(252, 240, 253, 0.95) 0 50%, transparent),
+    radial-gradient(56% 40% at 45% 82%, rgba(252, 238, 252, 0.95) 0 60%, transparent);
+}
+
+.fintar-hero-art .cloud--right {
+  left: 70%;
+  top: 53%;
+  width: 40%;
+  height: 20%;
+  background:
+    radial-gradient(16% 32% at 30% 44%, #fcf0fc 0 55%, transparent),
+    radial-gradient(18% 36% at 50% 36%, #f9e8fa 0 55%, transparent),
+    radial-gradient(20% 32% at 14% 68%, rgba(242, 216, 246, 0.95) 0 50%, transparent),
+    radial-gradient(22% 32% at 74% 60%, rgba(238, 212, 246, 0.9) 0 45%, transparent),
+    radial-gradient(56% 40% at 50% 86%, rgba(244, 224, 248, 0.9) 0 55%, transparent);
+}
+
+/* névoa na frente da base, como na referência */
+.fintar-hero-art .cloud--base {
+  z-index: 6;
+  left: -22%;
+  right: -10%;
+  bottom: -2%;
+  height: 30%;
+  filter: blur(12px);
+  opacity: 1;
+  background:
+    radial-gradient(22% 40% at 14% 30%, rgba(255, 242, 253, 0.95) 0 40%, transparent),
+    radial-gradient(26% 46% at 24% 64%, rgba(250, 232, 252, 0.8) 0 35%, transparent),
+    radial-gradient(18% 36% at 94% 34%, rgba(244, 222, 250, 0.8) 0 35%, transparent);
+}
+
+/* ---------------------------------------------------------
+   Fundo da página de login — exatamente a referência
+   --------------------------------------------------------- */
+
+.fintar-page-bg {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(34% 30% at 22% 12%, rgba(172, 156, 232, 0.55), transparent 70%),
+    radial-gradient(22% 30% at 40% 42%, rgba(188, 172, 238, 0.35), transparent 70%),
+    radial-gradient(52% 66% at 66% 46%, rgba(140, 106, 226, 0.88), transparent 74%),
+    radial-gradient(26% 44% at 100% 52%, rgba(166, 136, 232, 0.7), transparent 70%),
+    radial-gradient(36% 46% at 100% 8%, rgba(160, 138, 232, 0.85), transparent 70%),
+    radial-gradient(34% 44% at 100% 92%, rgba(176, 146, 240, 0.65), transparent 70%),
+    radial-gradient(40% 36% at 42% 100%, rgba(214, 186, 240, 0.5), transparent 70%),
+    #e6e0f4;
+}
+
+.fintar-page-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: soft-light;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}

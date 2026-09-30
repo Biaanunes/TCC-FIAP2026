@@ -47,9 +47,9 @@ export default function AbaAdicionarCliente({ modoEscuro, primaryColor }) {
   };
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div>
-        <h1 className="text-lg font-bold flex items-center gap-2">
+    <div className="max-w-xl mx-auto space-y-6">
+      <div className="text-center">
+        <h1 className="text-lg font-bold flex items-center justify-center gap-2">
           <UserPlus size={18} style={{ color: primaryColor }} /> Adicionar Cliente
         </h1>
         <p className="text-xs text-slate-400 mt-1">

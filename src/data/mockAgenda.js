@@ -23,6 +23,11 @@ export const mockDiasBloqueados = [
   { data: '2026-09-25', motivo: 'Compromisso pessoal' },
 ];
 
+// Feriados nacionais exibidos direto na grade do calendário.
+export const mockFeriados = [
+  { data: '2026-09-07', nome: 'Independência do Brasil' },
+];
+
 // Agendamentos já confirmados entre clientes e o contador.
 export const mockAgendamentos = [
   { id: 1, data: '2026-09-18', horario: '10:00', clienteNome: 'Beatriz Nunes', assunto: 'Revisão de gastos do mês' },
